@@ -1,41 +1,52 @@
-// import quizData from 'quiz-data.json';
+
 
 function init() {
    
     /*
 
-        const objQuizBank = {
-        questions:["foo___","bar___", "ele___", "mise___"],
-        options:[["bar1", "bar2", "bar", "bar3"],["foo1","foo2","foo","foo4"],["phant","phint","pheasant","phone"],["rai","rhin","ry","ryu"]],
-        answers:["bar", "foo", "phant", "ry"]
-    } */
+       Please note that the quiz-data.js file, which is loaded before this one, contains the objQuizBank 
+       object, which stores an array of questions in the 'questions' property, and two additional arrays
+       in the 'options' and 'answers' properties. The first of these additional arrays stores arrays of 
+       false choices to create multiple choice questions. The second stores the correct answers.
 
+       This was done simply for convenience and aesthetics, to more easily expand the question pool.
+    
+    */
 
     
-    //the objQuizBank stores an array of questions and an array of corresponding answer sets (arrays in their own right).
+    // Get ids of elements relevant to gameplay.
     let startButtEl = document.getElementById('start-button');
     let questFieldEl = document.getElementById('question-field');
     let answerFieldEl = document.getElementById('answer-field');
     let initFieldEl = document.getElementById('initials-field');
     let timerFieldEl = document.getElementById('timer-field');
     let hsButtEl= document.getElementById('HS-button');
+    let hsListFieldEl= document.getElementById('HS-list');
+    let gameBoardEl=document.getElementById('game-board');
 
+    //Get existing high scores, if any.
+    const objHighScores = RetrieveHS();
+    
+    
+    // Initialise game state and timer variables.
     let bTimerActive=false;
     let bGameState=false;
     let drawnQuestion=0;
-    questFieldEl.innerHTML="al";
+    questFieldEl.innerHTML="";
 
+    //Add event listeners to the START and HIGH SCORES buttons.
     startButtEl.addEventListener("click", InitGame);
     hsButtEl.addEventListener("click", ShowHS);
 
+    //Constants to easily tweak game difficulty and balance.
     const TIME_VALUE = 60;
     const ERROR_PENALTY = 15;
 
 
-
+    // The START button doubles as the forfeit button, should the user wish to exit early. 
     function InitGame() {
 
-        if (!bGameState) { // Behaviour when Start button is clicked but there isn't a game on.
+        if (!bGameState) { // Game starts when START button is clicked but there isn't a game on.
         bGameState=true;
         bTimerActive=true;
         // bBoardSet=false; ?
@@ -57,9 +68,9 @@ function init() {
             
             if (timeLeft<=0 || limitReached || !bGameState) {
                 clearInterval(timerInterval);
-                if (timeLeft<=0) {answerFieldEl.innerHTML="Time is up.";}
-                 else if (!bGameState) {answerFieldEl.innerHTML="Game over."} 
-                 else if(limitReached) {answerFieldEl.innerHTML="Well done. Your score is "+timeLeft;}
+                if (timeLeft<=0) {answerFieldEl.innerHTML= "Time has run out for you. You are not eligible for a high score.";}
+                 else if (!bGameState) {answerFieldEl.innerHTML="Forfeit. Your self-awareness does you credit. Game over."} 
+                 else if(limitReached) {answerFieldEl.innerHTML="Well done. Your score is "+timeLeft; objHighScores.push(["Johnny",timeLeft]);WriteHS(objHighScores);}
                  bGameState=false;
                  startButtEl.innerHTML='START';
 
@@ -93,11 +104,11 @@ function init() {
                     questionHeader.appendChild(optionItem[x]);
                     optionItem[x].innerHTML=objQuizBank.options[questionNumber][x];
                     optionItem[x].id="option"+x;
-                    optionItem[x].addEventListener("click", PrAns);
+                    optionItem[x].addEventListener("click", ProcessAnswer);
                 }
             
                 
-               function PrAns () { // List item click handler.
+               function ProcessAnswer () { // List item click handler.
                 console.log("clicked on "+this.value);
                 console.log("this is "+this);
                 if (objQuizBank.answers[questionNumber]===this.innerHTML) {
@@ -106,8 +117,8 @@ function init() {
                 answerFieldEl.innerHTML="Wrong!"
                 timeLeft=timeLeft-ERROR_PENALTY;    
                 }
-                // clean up elements
 
+                // Clean up any remaining lists.
                 BoardCleanUp();
 
                 if (drawnQuestion < (objQuizBank.answers.length-1)) {
@@ -119,7 +130,7 @@ function init() {
                     }
                 
 
-                }   //end PrAns();
+                }   //end ProcessAnswer();
             
          return
             //CreateBoard scope ends here.
@@ -144,14 +155,31 @@ function init() {
     return // InitGame scope ends here.
     }
 
+    function RetrieveHS() {
+        let objTempHS={};
+        objTempHS=JSON.parse(localStorage.getItem("tadcos29-js-quiz-hs"));
+    // if (objTempHS) {return objTempHS;} else {return {names:[],scores:[]}}
+    if (objTempHS) {return objTempHS;} else {return []}
+    }
+
+    function WriteHS(objTempHS) {
+        localStorage.setItem("tadcos29-js-quiz-hs", JSON.stringify(objTempHS));
+    }
+
     function ShowHS() {
         console.log("reached showhs")
         if (bGameState){
-            if (bTimerActive) {bTimerActive=false;initFieldEl.innerHTML="Showing this, pausing timer."} 
-            else { bTimerActive=true;initFieldEl.innerHTML="Game back on."}
-        } else {initFieldEl.innerHTML="Showing this, game is not on."}
-        return
-
+            if (bTimerActive) {bTimerActive=false;gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";hsListFieldEl.style.display="";} 
+            else { bTimerActive=true;gameBoardEl.style.display="";hsListFieldEl.style.display="none";hsListFieldEl.style.display="";hsButtEl.innerHTML="HIGH SCORES";}
+        } else if (hsButtEl.innerHTML==="BACK") {hsButtEl.innerHTML="HIGH SCORES";console.log("reached back");gameBoardEl.style.display="";hsListFieldEl.style.display="none"
+            }
+          else {hsListFieldEl.innerHTML="Showing high scores, game is not on."; gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";} 
+       //  really have to clean this up. However, functionality is there, just a question of toggling everything.
+        
+        
+        //nb might do this with classes instead of that nesting gameboard div.
+        
+        return 
     }
     function shuffleArray(array) {  // Durstenfeld shuffle, courtesy of a StackExchange answer.
         for (var i = array.length - 1; i > 0; i--) {
