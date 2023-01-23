@@ -21,26 +21,33 @@ function init() {
     let initFieldEl = document.getElementById('initials-field');
     let timerFieldEl = document.getElementById('timer-field');
     let hsButtEl= document.getElementById('HS-button');
+    let hsdButtEl= document.getElementById('HSD-button');
     let hsListFieldEl= document.getElementById('HS-list');
     let gameBoardEl=document.getElementById('game-board');
+    let submitButtEl=document.getElementById('submit-button');
+
 
     //Get existing high scores, if any.
-    const objHighScores = RetrieveHS();
+    let objHighScores = RetrieveHS();
     
     
-    // Initialise game state and timer variables.
+    // Initialise game state and timer variables, clear fields.
     let bTimerActive=false;
     let bGameState=false;
     let drawnQuestion=0;
+    let defaultInitials="TGC";
     questFieldEl.innerHTML="";
-
+    
     //Add event listeners to the START and HIGH SCORES buttons.
     startButtEl.addEventListener("click", InitGame);
     hsButtEl.addEventListener("click", ShowHS);
+    submitButtEl.addEventListener("click",GetInitials);
+    hsdButtEl.addEventListener("click",DeleteHS);
 
     //Constants to easily tweak game difficulty and balance.
     const TIME_VALUE = 60;
     const ERROR_PENALTY = 15;
+    let scoreTime=0;
 
 
     // The START button doubles as the forfeit button, should the user wish to exit early. 
@@ -49,9 +56,10 @@ function init() {
         if (!bGameState) { // Game starts when START button is clicked but there isn't a game on.
         bGameState=true;
         bTimerActive=true;
+        answerFieldEl.innerHTML="";
         // bBoardSet=false; ?
         this.innerHTML='RESET';
-        let timeLeft=TIME_VALUE; // Standard timer.
+        timeLeft=TIME_VALUE; // Standard timer.
         drawnQuestion=0;
         let limitReached=false;
         let timerInterval=setInterval(AdvanceTime, 1000);
@@ -69,21 +77,36 @@ function init() {
             if (timeLeft<=0 || limitReached || !bGameState) {
                 clearInterval(timerInterval);
                 if (timeLeft<=0) {answerFieldEl.innerHTML= "Time has run out for you. You are not eligible for a high score.";}
-                 else if (!bGameState) {answerFieldEl.innerHTML="Forfeit. Your self-awareness does you credit. Game over."} 
-                 else if(limitReached) {answerFieldEl.innerHTML="Well done. Your score is "+timeLeft; objHighScores.push(["Johnny",timeLeft]);WriteHS(objHighScores);}
+                 else if (!bGameState) {answerFieldEl.innerHTML="Forfeit. Your self-awareness does you credit. Game over.";timeLeft=0;} 
+                 else if(limitReached) {
+                scoreTime=timeLeft;
+                timeLeft=0;
+                answerFieldEl.innerHTML="Well done. Your score is "+scoreTime; 
+                initFieldEl.style.display=""; // alternative
+                submitButtEl.style.display="";
+                hsButtEl.style.display="none";
+                startButtEl.style.display="none";
+                 //objHighScores.push([defaultInitials,timeLeft]);
+                // WriteHS(objHighScores);
+                        //Is it conceivably reloading the page and re-reading the existing thing? But then it would duplicate first.
+                }
                  bGameState=false;
                  startButtEl.innerHTML='START';
 
                  this.innerHTML='START';
-                 timeLeft=0;
+                 //timeLeft=0;
+              
                  console.log(questFieldEl.children[0]);
                  timerFieldEl.innerHTML="";
                  BoardCleanUp();
+
+                 
+                 
             }
 
             
         }
-        
+     
 
         function CreateBoard(questionNumber) { 
                 // Dynamically create the question, give options, and add listeners
@@ -154,27 +177,49 @@ function init() {
 
     return // InitGame scope ends here.
     }
-
+    function GetInitials() {
+        event.preventDefault();
+        if (initFieldEl.value=="") {alert("Please don't make this more difficult than it has to be. Input some initials.");} else {
+            initFieldEl.style.display="none";
+            submitButtEl.style.display="none";
+            hsButtEl.style.display="";
+            startButtEl.style.display="";
+            defaultInitials=initFieldEl.value;
+            console.log("for some reason time Left is "+timeLeft);
+            console.log("for some reason defaultInitials is "+defaultInitials);
+            objHighScores.push([defaultInitials,scoreTime]);
+            WriteHS(objHighScores);
+            
+           
+        }
+    }
+ 
     function RetrieveHS() {
         let objTempHS={};
         objTempHS=JSON.parse(localStorage.getItem("tadcos29-js-quiz-hs"));
     // if (objTempHS) {return objTempHS;} else {return {names:[],scores:[]}}
-    if (objTempHS) {return objTempHS;} else {return []}
+    if (objTempHS) {console.log("purely for the sake of argument, objtemp is "+objTempHS);return objTempHS;} else {return []}
     }
 
     function WriteHS(objTempHS) {
         localStorage.setItem("tadcos29-js-quiz-hs", JSON.stringify(objTempHS));
     }
 
+    function DeleteHS() {
+        objHighScores.length=0;
+        localStorage.setItem("tadcos29-js-quiz-hs", JSON.stringify(objHighScores));
+        hsListFieldEl.innerHTML="";
+    }
+
     function ShowHS() {
         console.log("reached showhs")
         if (bGameState){
-            if (bTimerActive) {bTimerActive=false;gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";hsListFieldEl.style.display="";} 
-            else { bTimerActive=true;gameBoardEl.style.display="";hsListFieldEl.style.display="none";hsListFieldEl.style.display="";hsButtEl.innerHTML="HIGH SCORES";}
-        } else if (hsButtEl.innerHTML==="BACK") {hsButtEl.innerHTML="HIGH SCORES";console.log("reached back");gameBoardEl.style.display="";hsListFieldEl.style.display="none"
+            if (bTimerActive) {bTimerActive=false;gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";hsdButtEl.style.display="";hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";hsListFieldEl.style.display="";} 
+            else { bTimerActive=true;gameBoardEl.style.display="";hsdButtEl.style.display="none";hsListFieldEl.style.display="none";hsButtEl.innerHTML="HIGH SCORES";}
+        } else if (hsButtEl.innerHTML==="BACK") {hsButtEl.innerHTML="HIGH SCORES";console.log("reached back");hsdButtEl.style.display="none";gameBoardEl.style.display="";hsListFieldEl.style.display="none"
             }
-          else {hsListFieldEl.innerHTML="Showing high scores, game is not on."; gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";} 
-       //  really have to clean this up. However, functionality is there, just a question of toggling everything.
+          else {hsListFieldEl.style.display="";hsListFieldEl.innerHTML=objHighScores+ "<br> The game is not on at this time."; gameBoardEl.style.display="none";hsdButtEl.style.display="";hsButtEl.innerHTML="BACK";} 
+       //  really have to clean this up. However, functionality is there, just a question of toggling everything correctly.
         
         
         //nb might do this with classes instead of that nesting gameboard div.
