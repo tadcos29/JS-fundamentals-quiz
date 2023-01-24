@@ -81,7 +81,7 @@ function init() {
                  else if(limitReached) {
                 scoreTime=timeLeft;
                 timeLeft=0;
-                answerFieldEl.innerHTML="Well done. Your score is "+scoreTime; 
+                answerFieldEl.innerHTML="Well done for finishing. Your score is "+scoreTime; 
                 initFieldEl.style.display=""; // alternative
                 submitButtEl.style.display="";
                 hsButtEl.style.display="none";
@@ -163,7 +163,7 @@ function init() {
     function BoardCleanUp() {
         console.log("Cleanup's Children: "+questFieldEl.children[0])
         if (questFieldEl.children[0]!=undefined) { // Under some conditions, such as clean victory, BoardCleanUp() has already been called,
-                                                 // and questFieldEl is already childless. This catches the console error.
+                                                 // and questFieldEl is already childless. This conditional catches the console error.
         for (i=0;i<questFieldEl.children[0].childElementCount;i++) { 
             console.log(questFieldEl.children[0].children[i]);//cleaning up any dynamic contents of question field once game is over.
             questFieldEl.children[0].children[i].removeEventListener;
@@ -212,17 +212,31 @@ function init() {
     }
 
     function ShowHS() {
-        console.log("reached showhs")
-        if (bGameState){
-            if (bTimerActive) {bTimerActive=false;gameBoardEl.style.display="none";hsButtEl.innerHTML="BACK";hsdButtEl.style.display="";hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";hsListFieldEl.style.display="";} 
-            else { bTimerActive=true;gameBoardEl.style.display="";hsdButtEl.style.display="none";hsListFieldEl.style.display="none";hsButtEl.innerHTML="HIGH SCORES";}
-        } else if (hsButtEl.innerHTML==="BACK") {hsButtEl.innerHTML="HIGH SCORES";console.log("reached back");hsdButtEl.style.display="none";gameBoardEl.style.display="";hsListFieldEl.style.display="none"
+        console.log("reached showhs");
+        if (bGameState){ // Processing the request to show high scores while the game is running.
+            if (bTimerActive) {bTimerActive=false;
+                gameBoardEl.style.display="none"; //Hide main game board container
+                hsButtEl.innerHTML="BACK"; // The HIGH SCORES button becomes the back button.
+                hsdButtEl.style.display=""; //Display the button for deleting high scores.
+                hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";
+                hsListFieldEl.style.display="";} //Show high score list container
+            else { bTimerActive=true;
+                gameBoardEl.style.display="";
+                hsdButtEl.style.display="none";
+                hsListFieldEl.style.display="none";
+                hsButtEl.innerHTML="HIGH SCORES";}
+        } else if (hsButtEl.innerHTML==="BACK") {  // return to main screen if high scores are currently being displayed
+            hsButtEl.innerHTML="HIGH SCORES"; 
+            hsdButtEl.style.display="none";
+            gameBoardEl.style.display="";
+            hsListFieldEl.style.display="none";
             }
-          else {hsListFieldEl.style.display="";hsListFieldEl.innerHTML=objHighScores+ "<br> The game is not on at this time."; gameBoardEl.style.display="none";hsdButtEl.style.display="";hsButtEl.innerHTML="BACK";} 
-       //  really have to clean this up. However, functionality is there, just a question of toggling everything correctly.
-        
-        
-        //nb might do this with classes instead of that nesting gameboard div.
+          else { // show high scores if they are NOT currently being displayed
+            hsListFieldEl.style.display=""; //Show high score list container
+            hsListFieldEl.innerHTML=objHighScores+ "<br> The game is not on at this time.";
+             gameBoardEl.style.display="none"; //Hide main game board container
+             hsdButtEl.style.display=""; //Display the button for deleting high scores.
+             hsButtEl.innerHTML="BACK";} // Repurposing the HIGH SCORES button into the BACK button, as before.
         
         return 
     }

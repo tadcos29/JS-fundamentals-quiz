@@ -5,19 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Quiz</title>
+    <link rel="stylesheet" type="text/css" href="./assets/css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
+
 </head>
 <body>
-    <div id="game-board">
-    <button id="start-button">START</button>
-    <div id="timer-field"></div>
-    <div id="question-field"></div>
-    <div id="answer-field"></div>
-    <input id="initials-field" maxlength="3" value="TGC" style="display:none">
-    <button id="submit-button" style="display:none">SUBMIT</button>
-    </div>
-    <div id="HS-list"></div>
-    <button id="HS-button">HIGH SCORES</button>
-    <button id="HSD-button" style="display:none">DELETE HIGH SCORES</button>
+    <header><h1>JavaScript Quiz</h1></header>
+    <main>
+        <div id="game-board">
+            <button id="start-button" class="generic-button">START</button>
+            <div id="timer-field"></div>
+            <div id="question-field"></div>
+            <div id="answer-field"></div>
+        </div>
+        <input id="initials-field" maxlength="3" value="TGC" style="display:none">
+        <button id="submit-button" style="display:none" class="generic-button">SUBMIT</button>
+        <div id="HS-list"></div>
+        <button id="HS-button" class="generic-button">HIGH SCORES</button>
+        <button id="HSD-button" style="display:none" class="generic-button">DELETE HIGH SCORES</button>
+            
+        </main>
 </body>
 <script src="./assets/js/quiz-data.js"></script>
 <script src="./assets/js/script.js"></script>

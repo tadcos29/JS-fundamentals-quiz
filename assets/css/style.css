@@ -1,0 +1,133 @@
+
+:root {
+    --main-bg:rgb(238, 228, 248);
+    --main-font-color: rgb(145, 56, 163);
+    --board-color: #d2bee7;
+    --header-bg: #AD8fcc;
+    --header-text: #fcf9ef;
+    }
+
+* {
+    font-family: sans-serif;
+    background-color:var(--main-bg);
+    box-sizing:border-box;
+    min-height: 0;
+    min-width: 0;
+    font-size:100%;
+    /* background:inherit; */
+    }
+
+a {
+    color: var(--main-font-color);
+    font-style:normal;
+    }
+
+body{
+    font-size: 2vw;
+    color:var(--main-font-color);
+    }
+
+header{
+    display:flex;
+    flex-wrap:row;
+    justify-content: center;
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    margin-top: 2%;
+}
+
+header h1 {background:inherit}
+main {
+    display:flex;
+    flex-wrap:column;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin:2vh;
+}
+
+#game-board {
+    padding: 2%;
+    background-color:var(--board-color);
+    min-width: 80%;
+    display: flex;
+    flex-wrap: row;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    max-height: fit-content;
+ 
+}
+
+
+.score-keeper {
+
+
+}
+
+.answer-option {
+
+}
+
+#timer-field {
+    color:rgb(100, 12, 117);
+    font-size: 200%;
+    background: inherit;
+
+}
+
+#question-field {
+    color:rgb(100, 12, 117);
+    background: inherit;
+
+}
+
+#question-field ol {
+    background:inherit;
+    list-style: none;
+}
+
+#question-field ol li{
+    border: solid;
+    border-width: 1px;
+    color:rgb(117, 12, 12);
+    font-size: 100%;
+    bg-color: var(--main-bg);
+    /* box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);  */
+    margin:2vh;
+    padding: 0.25vh 1vh 0.25vh 0.25vh;
+
+}
+
+#question-field ol li:hover {
+    box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);
+    margin:1.8vh; 
+}
+
+
+
+.generic-button {
+    padding: 0.25% 0.75%;
+    max-width: 25%;
+    /* border-radius: 1vh; */
+    /* border-style: dotted; */
+    box-shadow: 0.1vh 0.1vh 0.2vh 0vh var(--main-font-color); 
+    flex-grow: 0 1 50%;
+    margin: 2%;
+
+}
+.generic-button:hover {
+    /* border-radius: 1vh; */
+}
+
+@media screen and (max-width: 768px) {
+    body{font-size: 120%;}
+    
+    .generic-button{max-width: 50%;}
+}
+
+@media screen and (max-width: 768px) {
+    body{font-size: 120%;}
+    
+    .generic-button{max-width: 50%;}
+}
