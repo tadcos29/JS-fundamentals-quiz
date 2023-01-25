@@ -1,23 +1,26 @@
 const objQuizBank = {
     questions:[
-    "foo___",
-    "bar___", 
-    "ele___", 
-    "mise___",
-    "Commonly used JavaScript data types do NOT include ____."],
+    "Arrays in JavaScript may be used to store _____",
+    "Which of the following is not a comparison operator?", 
+    "A very useful tool used during development and debugging for printing content to the debugger is:", 
+    "The condition in an if-then statement is enclosed in ____",
+    "Commonly used JavaScript data types do NOT include ____.",
+    "Which of the following is a function expression?"],
     options:[
-        ["bar1", "bar2", "bar", "bar3"],
-        ["foo1","foo2","foo","foo4"],
-        ["phant","phint","pheasant","phone"],
-        ["rai","rhin","ry","ryu"],
-        ["numbers","alerts","strings","booleans"]
+        ["numbers and strings", "other arrays", "booleans", "all of the types listed"],
+        ["==","===",">=","\|\|"],
+        ["JavaScript","terminal\/bash","for loops","console\.log"],
+        ["quotes","curly brackets","parentheses","square brackets"],
+        ["numbers","alerts","strings","booleans"],
+        ["function MyFunction\(\) \{console\.log(\'Hello World'\)\;\}","var getRectArea = function(width, height)","const objQuizBank = {questions:0}","if (x=0;x<3;x++) {}"]
 
 
     ],
     answers:[
-        "bar",
-        "foo", 
-        "phant", 
-        "ry",
-        "alerts"]
+        "all of the types listed",
+        "\|\|", 
+        "console\.log", 
+        "parentheses",
+        "alerts",
+        "var getRectArea = function(width, height)"]
 }

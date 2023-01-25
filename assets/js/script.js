@@ -39,12 +39,13 @@ function init() {
     let drawnQuestion=0;
     let defaultInitials="TGC";
     questFieldEl.innerHTML="";
+    // Make sure timekeeping elements are not displayed.
     ToggleTimer(false);
     
   
 
     
-    //Add event listeners to the START and HIGH SCORES buttons.
+    //Add event listeners to the START, HIGH SCORES, SUBMIT, and DELETE HIGH SCORES buttons.
     startButtEl.addEventListener("click", InitGame);
     hsButtEl.addEventListener("click", ShowHS);
     submitButtEl.addEventListener("click",GetInitials);
@@ -54,6 +55,7 @@ function init() {
     const TIME_VALUE = 60;
     const ERROR_PENALTY = 15;
     let scoreTime=0;
+    //Describe the game to the user. This will only appear the first time the application is loaded.
     splashFieldEl.innerHTML="The following quiz will present you with a number of multiple choice questions related to the JavaScript language. Once you press START, a timer will begin counting down. Each wrong answer will reduce the timer by an additional "+ERROR_PENALTY+" seconds. Answering all questions with time left on the clock will make you eligible for entry into the high scores list. Good luck!"
 
     // The START button doubles as the forfeit button, should the user wish to exit early. 
@@ -64,9 +66,8 @@ function init() {
         bGameState=true;
         bTimerActive=true;
         answerFieldEl.innerHTML="";
-        // bBoardSet=false; ?
         this.innerHTML='RESET';
-        timeLeft=TIME_VALUE; // Standard timer.
+        timeLeft=TIME_VALUE; // Standard time limit.
       
         timerLabelEl.style.color="";
         timerFieldEl.style.color=""
@@ -75,8 +76,7 @@ function init() {
         drawnQuestion=0;
         let limitReached=false;
         let timerInterval=setInterval(AdvanceTime, 1000);
-       // drawnQuestion=QuestionRandomiser(); May put this in.
-       console.log(objQuizBank.questions[drawnQuestion]);
+       // Create the first board. Subsequently this function will recur until the game is over.
         CreateBoard(drawnQuestion);
 
 
@@ -90,7 +90,7 @@ function init() {
                 }
 
             }
-            
+            // Conditional to catch game-ending conditions: out of time, out of questions, and reset, respectively.
             if (timeLeft<=0 || limitReached || !bGameState) {
                 clearInterval(timerInterval);
                 if (timeLeft<=0) {timerFieldEl.innerHTML=timeLeft;answerFieldEl.innerHTML= "Time has run out for you. You are not eligible for a high score.";}
@@ -99,24 +99,18 @@ function init() {
                 scoreTime=timeLeft;
                 timeLeft=0;
                 answerFieldEl.innerHTML="Well done for finishing. Your score is "+scoreTime+". Please input your initials (max 3 characters) so that your score may be recorded for posterity." 
-                initFieldEl.style.display=""; // alternative
+                // If the user has finished the game successfully (limitReached) present them with the high score recording buttons.
+                initFieldEl.style.display=""; 
                 initFieldEl.focus();
                 submitButtEl.style.display="";
                 hsButtEl.style.display="none";
                 startButtEl.style.display="none";
-                 //objHighScores.push([defaultInitials,timeLeft]);
-                // WriteHS(objHighScores);
-                        //Is it conceivably reloading the page and re-reading the existing thing? But then it would duplicate first.
                 }
                  bGameState=false;
                  startButtEl.innerHTML='START';
 
                  this.innerHTML='START';
-                 //timeLeft=0;
-              
-                //  for (x=0;x<document.getElementsByClassName("timer").length;x++) {
-                //     document.getElementsByClassName("timer")[x].style.display="";
-                // }
+                // Hide time-keeping elements and clean up the board, removing multiple-choice elements.
                 ToggleTimer(false);
                  BoardCleanUp();
 
@@ -135,7 +129,6 @@ function init() {
                 console.log("reached just into createboard with "+questionNumber);
                 let questionHeader = document.createElement("ol");
                 let optionItem=[];
-                // Does this keep creating new arrays? Or do the arrays get cleaned up?
                 let rgLocalShuffled=objQuizBank.options[questionNumber]; //reassigning the object array to a local one for shuffling.
                 shuffleArray(rgLocalShuffled); //shuffling the options, to randomise their order every time they are presented.
                 questFieldEl.appendChild(questionHeader);
@@ -150,7 +143,7 @@ function init() {
                 }
             
                 
-               function ProcessAnswer () { // List item click handler.
+               function ProcessAnswer () { // List item click handler for the multiple-choice questions.
                 console.log("clicked on "+this.value);
                 console.log("this is "+this);
                 if (objQuizBank.answers[questionNumber]===this.innerHTML) {
@@ -177,7 +170,7 @@ function init() {
          return
             //CreateBoard scope ends here.
         }
-    } else {bGameState=false;}//bGameState flag wrapper, just to avoid problems with multiple hits of the Start button.
+    } else {bGameState=false;}//bGameState flag wrapper, just to avoid problems with accidental multiple hits of the Start button.
     
     function BoardCleanUp() {
         console.log("Cleanup's Children: "+questFieldEl.children[0])
@@ -197,6 +190,7 @@ function init() {
     return // InitGame scope ends here.
     }
     function GetInitials() {
+        // A function to obtain the winning user's initials and record their score. All interface other than what's relevant to this task is hidden.
         event.preventDefault();
         if (initFieldEl.value=="") {alert("Please don't make this more difficult than it has to be. Input some initials.");} else {
             initFieldEl.style.display="none";
@@ -204,7 +198,9 @@ function init() {
             hsButtEl.style.display="";
             startButtEl.style.display="";
             defaultInitials=initFieldEl.value;
+            // Add initials and time to score object.
             objHighScores.push([defaultInitials,scoreTime]);
+            // Write scores to local storage.
             WriteHS(objHighScores);
             answerFieldEl.innerHTML="Congratulations on finishing the quiz."
            
@@ -213,8 +209,8 @@ function init() {
     function RetrieveHS() {
         let objTempHS={};
         objTempHS=JSON.parse(localStorage.getItem("tadcos29-js-quiz-hs"));
-    // if (objTempHS) {return objTempHS;} else {return {names:[],scores:[]}}
-    if (objTempHS) {console.log("purely for the sake of argument, objtemp is "+objTempHS);return objTempHS;} else {return []}
+        //If there are scores in local storage, retrieve them, otherwise return empty array.
+    if (objTempHS) {return objTempHS;} else {return []}
     }
 
     function WriteHS(objTempHS) {
@@ -222,11 +218,15 @@ function init() {
     }
 
     function DeleteHS() {
+        //Wipe the local object.
         objHighScores.length=0;
+        //Replace local storage with the now-empty local object.
         localStorage.setItem("tadcos29-js-quiz-hs", JSON.stringify(objHighScores));
+        //Update high score display to reflect deletion of high scores.
         hsListFieldEl.innerHTML=DrawHSNicely();
     }
     function DrawHSNicely() {
+        // A simple function for rendering HTML of the score list.
         let formattedScores="";
         if (objHighScores.length>0) {
             formattedScores="<br>High scores:<br><br>"
