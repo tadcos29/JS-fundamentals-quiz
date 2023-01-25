@@ -65,6 +65,8 @@ main {
 
 #initials-field{
     margin:2vh;
+    border:dotted;
+    border-width:1px;
 }
 
 #timer-field {
@@ -85,6 +87,11 @@ main {
     list-style: none;
 }
 
+#splash-screen {
+    width:50%;
+    font-size: 70%;
+}
+
 #question-field ol li{
     border: solid;
     border-width: 1px;
@@ -97,9 +104,6 @@ main {
 
 }
 
-/* #answer-field {
-    background: inherit;
-} */
 
 #question-field ol li:hover {
     box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);
@@ -107,9 +111,6 @@ main {
     cursor: pointer;
 }
 
-.touch-of-red { 
-    color:red;
-}
 
 .generic-button {
     /* background-color: var(--main-bg-color); */

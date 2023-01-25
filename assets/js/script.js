@@ -15,10 +15,12 @@ function init() {
 
     
     // Get ids of elements relevant to gameplay.
+    let splashFieldEl = document.getElementById('splash-screen');
     let startButtEl = document.getElementById('start-button');
     let questFieldEl = document.getElementById('question-field');
     let answerFieldEl = document.getElementById('answer-field');
     let initFieldEl = document.getElementById('initials-field');
+    let timerLabelEl = document.getElementById('timer-label');
     let timerFieldEl = document.getElementById('timer-field');
     let hsButtEl= document.getElementById('HS-button');
     let hsdButtEl= document.getElementById('HSD-button');
@@ -37,6 +39,10 @@ function init() {
     let drawnQuestion=0;
     let defaultInitials="TGC";
     questFieldEl.innerHTML="";
+    ToggleTimer(false);
+    
+  
+
     
     //Add event listeners to the START and HIGH SCORES buttons.
     startButtEl.addEventListener("click", InitGame);
@@ -48,18 +54,24 @@ function init() {
     const TIME_VALUE = 60;
     const ERROR_PENALTY = 15;
     let scoreTime=0;
-
+    splashFieldEl.innerHTML="The following quiz will present you with a number of multiple choice questions related to the JavaScript language. Once you press START, a timer will begin counting down. Each wrong answer will reduce the timer by an additional "+ERROR_PENALTY+" seconds. Answering all questions with time left on the clock will make you eligible for entry into the high scores list. Good luck!"
 
     // The START button doubles as the forfeit button, should the user wish to exit early. 
     function InitGame() {
 
         if (!bGameState) { // Game starts when START button is clicked but there isn't a game on.
+        splashFieldEl.style.display="none";
         bGameState=true;
         bTimerActive=true;
         answerFieldEl.innerHTML="";
         // bBoardSet=false; ?
         this.innerHTML='RESET';
         timeLeft=TIME_VALUE; // Standard timer.
+      
+        timerLabelEl.style.color="";
+        timerFieldEl.style.color=""
+        ToggleTimer(true);
+        timerFieldEl.innerHTML=timeLeft;
         drawnQuestion=0;
         let limitReached=false;
         let timerInterval=setInterval(AdvanceTime, 1000);
@@ -74,19 +86,21 @@ function init() {
                 timerFieldEl.innerHTML=timeLeft;
                 if (timeLeft<11 && timeLeft>0) {
                     timerFieldEl.style.color="red";
-                } else {timerFieldEl.style.color="";}
+                    timerLabelEl.style.color="red";
+                }
 
             }
             
             if (timeLeft<=0 || limitReached || !bGameState) {
                 clearInterval(timerInterval);
-                if (timeLeft<=0) {answerFieldEl.innerHTML= "Time has run out for you. You are not eligible for a high score.";}
+                if (timeLeft<=0) {timerFieldEl.innerHTML=timeLeft;answerFieldEl.innerHTML= "Time has run out for you. You are not eligible for a high score.";}
                  else if (!bGameState) {answerFieldEl.innerHTML="Forfeit. Your self-awareness does you credit. Game over.";timeLeft=0;} 
                  else if(limitReached) {
                 scoreTime=timeLeft;
                 timeLeft=0;
                 answerFieldEl.innerHTML="Well done for finishing. Your score is "+scoreTime+". Please input your initials (max 3 characters) so that your score may be recorded for posterity." 
                 initFieldEl.style.display=""; // alternative
+                initFieldEl.focus();
                 submitButtEl.style.display="";
                 hsButtEl.style.display="none";
                 startButtEl.style.display="none";
@@ -100,8 +114,10 @@ function init() {
                  this.innerHTML='START';
                  //timeLeft=0;
               
-                 console.log(questFieldEl.children[0]);
-                 timerFieldEl.innerHTML="";
+                //  for (x=0;x<document.getElementsByClassName("timer").length;x++) {
+                //     document.getElementsByClassName("timer")[x].style.display="";
+                // }
+                ToggleTimer(false);
                  BoardCleanUp();
 
                  
@@ -121,7 +137,6 @@ function init() {
                 let optionItem=[];
                 // Does this keep creating new arrays? Or do the arrays get cleaned up?
                 let rgLocalShuffled=objQuizBank.options[questionNumber]; //reassigning the object array to a local one for shuffling.
-                console.log("reached next createboard with "+questionNumber);
                 shuffleArray(rgLocalShuffled); //shuffling the options, to randomise their order every time they are presented.
                 questFieldEl.appendChild(questionHeader);
                 // questionHeader.innerHTML=objQuizBank.questions[questionNumber]; I don't believe we need to put anything in the OL.
@@ -150,8 +165,8 @@ function init() {
 
                 if (drawnQuestion < (objQuizBank.answers.length-1)) {
                     drawnQuestion++;
-                    console.log("reached dQ increment "+drawnQuestion);
-                    CreateBoard(drawnQuestion);
+                    let localInterval=setInterval(CreateBoard(drawnQuestion), 1000);
+                    clearInterval(localInterval);
                     } else {
                     limitReached=true;
                     }
@@ -189,15 +204,12 @@ function init() {
             hsButtEl.style.display="";
             startButtEl.style.display="";
             defaultInitials=initFieldEl.value;
-            console.log("for some reason time Left is "+timeLeft);
-            console.log("for some reason defaultInitials is "+defaultInitials);
             objHighScores.push([defaultInitials,scoreTime]);
             WriteHS(objHighScores);
             answerFieldEl.innerHTML="Congratulations on finishing the quiz."
            
         }
     }
- 
     function RetrieveHS() {
         let objTempHS={};
         objTempHS=JSON.parse(localStorage.getItem("tadcos29-js-quiz-hs"));
@@ -228,7 +240,6 @@ function init() {
 
     }
     function ShowHS() {
-        console.log("reached showhs");
         if (bGameState){ // Processing the request to show high scores while the game is running.
             if (bTimerActive) {bTimerActive=false;
                 gameBoardEl.style.display="none"; //Hide main game board container
@@ -259,6 +270,15 @@ function init() {
              hsButtEl.innerHTML="BACK";} // Repurposing the HIGH SCORES button into the BACK button, as before.
         
         return 
+    }
+    function ToggleTimer(visible) {
+        if (visible){
+            timerLabelEl.style.display="";
+            timerFieldEl.style.display="";
+        } else {
+            timerLabelEl.style.display="none";
+            timerFieldEl.style.display="none";
+        }
     }
     function shuffleArray(array) {  // Durstenfeld shuffle, courtesy of a StackExchange answer.
         for (var i = array.length - 1; i > 0; i--) {
