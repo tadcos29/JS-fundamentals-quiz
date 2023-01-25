@@ -12,7 +12,7 @@ A coding bootcamp student wishes to track their progress in memorising JavaScrip
 
 The application administers a 60-second quiz, penalising wrong answers by subtracting fifteen seconds from the time remaining. If the user successfully completes the quiz, they enter their initials and their score is recorded. The record persists in browser local storage until explicitly cleared.
 
-![image](./assets/img/pg-ord-toolong-reject.png)
+![image](./assets/img/JavaScriptQuiz.gif)
 
 ## Results:
 
