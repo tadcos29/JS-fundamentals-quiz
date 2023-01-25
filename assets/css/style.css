@@ -88,7 +88,7 @@ main {
 #question-field ol li{
     border: solid;
     border-width: 1px;
-    color:rgb(117, 12, 12);
+    color:var(--main-font-color);
     font-size: 100%;
     background-color: var(--main-bg);
     /* box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);  */
