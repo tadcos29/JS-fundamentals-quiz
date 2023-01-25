@@ -72,6 +72,10 @@ function init() {
             if (bTimerActive) {
                 timeLeft--;
                 timerFieldEl.innerHTML=timeLeft;
+                if (timeLeft<11 && timeLeft>0) {
+                    timerFieldEl.style.color="red";
+                } else {timerFieldEl.style.color="";}
+
             }
             
             if (timeLeft<=0 || limitReached || !bGameState) {
@@ -81,7 +85,7 @@ function init() {
                  else if(limitReached) {
                 scoreTime=timeLeft;
                 timeLeft=0;
-                answerFieldEl.innerHTML="Well done for finishing. Your score is "+scoreTime; 
+                answerFieldEl.innerHTML="Well done for finishing. Your score is "+scoreTime+". Please input your initials (max 3 characters) so that your score may be recorded for posterity." 
                 initFieldEl.style.display=""; // alternative
                 submitButtEl.style.display="";
                 hsButtEl.style.display="none";
@@ -189,7 +193,7 @@ function init() {
             console.log("for some reason defaultInitials is "+defaultInitials);
             objHighScores.push([defaultInitials,scoreTime]);
             WriteHS(objHighScores);
-            
+            answerFieldEl.innerHTML="Congratulations on finishing the quiz."
            
         }
     }
@@ -208,17 +212,31 @@ function init() {
     function DeleteHS() {
         objHighScores.length=0;
         localStorage.setItem("tadcos29-js-quiz-hs", JSON.stringify(objHighScores));
-        hsListFieldEl.innerHTML="";
+        hsListFieldEl.innerHTML=DrawHSNicely();
     }
+    function DrawHSNicely() {
+        let formattedScores="";
+        if (objHighScores.length>0) {
+            formattedScores="<br>High scores:<br><br>"
+        for (x=0;x<objHighScores.length;x++) {
+            formattedScores=formattedScores+objHighScores[x][0]+" ---- "+objHighScores[x][1]+"<br>";
+        }
 
+        } else {formattedScores="There are no high scores recorded at this time."}
+
+        return formattedScores;
+
+    }
     function ShowHS() {
         console.log("reached showhs");
         if (bGameState){ // Processing the request to show high scores while the game is running.
             if (bTimerActive) {bTimerActive=false;
                 gameBoardEl.style.display="none"; //Hide main game board container
                 hsButtEl.innerHTML="BACK"; // The HIGH SCORES button becomes the back button.
+                if (objHighScores.length>0) {
                 hsdButtEl.style.display=""; //Display the button for deleting high scores.
-                hsListFieldEl.innerHTML=objHighScores+ "<br> Timer paused.";
+                }
+                hsListFieldEl.innerHTML=DrawHSNicely()+ "<br> Timer paused.";
                 hsListFieldEl.style.display="";} //Show high score list container
             else { bTimerActive=true;
                 gameBoardEl.style.display="";
@@ -233,9 +251,11 @@ function init() {
             }
           else { // show high scores if they are NOT currently being displayed
             hsListFieldEl.style.display=""; //Show high score list container
-            hsListFieldEl.innerHTML=objHighScores+ "<br> The game is not on at this time.";
+            hsListFieldEl.innerHTML=DrawHSNicely(); //There is no game.
              gameBoardEl.style.display="none"; //Hide main game board container
-             hsdButtEl.style.display=""; //Display the button for deleting high scores.
+             if (objHighScores.length>0) {
+                hsdButtEl.style.display=""; //Display the button for deleting high scores.
+                }
              hsButtEl.innerHTML="BACK";} // Repurposing the HIGH SCORES button into the BACK button, as before.
         
         return 

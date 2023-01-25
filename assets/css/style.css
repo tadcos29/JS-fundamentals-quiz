@@ -27,7 +27,7 @@ body{
     color:var(--main-font-color);
     }
 
-header{
+header, footer{
     display:flex;
     flex-wrap:row;
     justify-content: center;
@@ -36,7 +36,8 @@ header{
     margin-top: 2%;
 }
 
-header h1 {background:inherit}
+header h1, footer h3 {background:inherit}
+footer h3 {font-size: 70%;}
 main {
     display:flex;
     flex-wrap:column;
@@ -59,26 +60,23 @@ main {
  
 }
 
+.transparent {background:inherit;}
 
-.score-keeper {
 
-
-}
-
-.answer-option {
-
+#initials-field{
+    margin:2vh;
 }
 
 #timer-field {
     color:rgb(100, 12, 117);
     font-size: 200%;
-    background: inherit;
+    margin:2vh;
 
 }
 
 #question-field {
     color:rgb(100, 12, 117);
-    background: inherit;
+
 
 }
 
@@ -92,21 +90,29 @@ main {
     border-width: 1px;
     color:rgb(117, 12, 12);
     font-size: 100%;
-    bg-color: var(--main-bg);
+    background-color: var(--main-bg);
     /* box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);  */
     margin:2vh;
     padding: 0.25vh 1vh 0.25vh 0.25vh;
 
 }
 
+/* #answer-field {
+    background: inherit;
+} */
+
 #question-field ol li:hover {
     box-shadow: 0.4vh 0.1vh 0.6vh 0vh var(--main-font-color);
-    margin:1.8vh; 
+    margin:1.8vh;
+    cursor: pointer;
 }
 
-
+.touch-of-red { 
+    color:red;
+}
 
 .generic-button {
+    /* background-color: var(--main-bg-color); */
     padding: 0.25% 0.75%;
     max-width: 25%;
     /* border-radius: 1vh; */
@@ -118,6 +124,9 @@ main {
 }
 .generic-button:hover {
     /* border-radius: 1vh; */
+    cursor: pointer;
+    background-color: whitesmoke;
+    /* border-width: 0.5vh; */
 }
 
 @media screen and (max-width: 768px) {
